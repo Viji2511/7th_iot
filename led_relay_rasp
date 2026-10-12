@@ -1,0 +1,35 @@
+import time
+import RPi.GPIO as GPIO
+
+PIR = 17
+RELAY = 27
+
+last_motion = 0
+relay_on = False
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(PIR, GPIO.IN)
+GPIO.setup(RELAY, GPIO.OUT)
+GPIO.output(RELAY, GPIO.LOW)
+
+try:
+    while True:
+        now = time.monotonic()
+        motion = GPIO.input(PIR)
+
+        if motion == GPIO.HIGH:
+            last_motion = now
+            GPIO.output(RELAY, GPIO.HIGH)
+            relay_on = True
+
+        if relay_on and now - last_motion >= 10:
+            GPIO.output(RELAY, GPIO.LOW)
+            relay_on = False
+
+        time.sleep(0.02)
+
+except KeyboardInterrupt:
+    print("Stopped")
+
+finally:
+    GPIO.cleanup()
