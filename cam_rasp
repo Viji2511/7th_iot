@@ -1,0 +1,40 @@
+import time
+import RPi.GPIO as GPIO
+from picamera2 import Picamera2
+from pathlib import Path
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(17, GPIO.IN)
+
+folder = Path("captures")
+folder.mkdir(exist_ok=True)
+
+camera = Picamera2()
+camera.configure(camera.create_still_configuration())
+camera.start()
+time.sleep(2)
+
+last_capture = -5
+last_state = GPIO.LOW
+
+try:
+    while True:
+        now = time.monotonic()
+        motion = GPIO.input(17)
+
+        if motion == GPIO.HIGH and last_state == GPIO.LOW:
+            if now - last_capture >= 5:
+                filename = folder / "images.jpg"
+                camera.capture_file(str(filename))
+                print("Image saved:", filename)
+                last_capture = now
+
+        last_state = motion
+        time.sleep(0.1)
+
+except KeyboardInterrupt:
+    print("Stopped")
+
+finally:
+    camera.stop()
+    GPIO.cleanup()
