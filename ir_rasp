@@ -1,0 +1,30 @@
+import time
+import RPi.GPIO as GPIO
+
+IR = 17
+count = 0
+last_state = GPIO.HIGH
+last_time = 0
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(IR, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+try:
+    while True:
+        state = GPIO.input(IR)
+        now = time.monotonic()
+
+        if state == GPIO.LOW and last_state == GPIO.HIGH:
+            if now - last_time >= 1:
+                count += 1
+                print("Object detected! Total Count:", count)
+                last_time = now
+
+        last_state = state
+        time.sleep(0.02)
+
+except KeyboardInterrupt:
+    print("Stopped")
+
+finally:
+    GPIO.cleanup()
