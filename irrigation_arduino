@@ -1,0 +1,29 @@
+int soil = A0;
+int rain = 2;
+int buzzer = 3;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(rain, INPUT);
+  pinMode(buzzer, OUTPUT);
+}
+
+void loop() {
+  int value = analogRead(soil);
+  int moisture = map(value, 1023, 0, 0, 100);
+  int rainValue = digitalRead(rain);
+
+  Serial.print("Soil Moisture: ");
+  Serial.print(moisture);
+  Serial.println("%");
+
+  if (moisture < 40 && rainValue == HIGH) {
+    digitalWrite(buzzer, HIGH);
+    Serial.println("Irrigation Required");
+  } else {
+    digitalWrite(buzzer, LOW);
+    Serial.println("Irrigation Not Required");
+  }
+
+  delay(1000);
+}
