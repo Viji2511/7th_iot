@@ -1,0 +1,35 @@
+int PIR = 2;
+int buzzer = 3;
+
+unsigned long start;
+unsigned long lastAlert = -10000UL;
+int lastState = LOW;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(PIR, INPUT);
+  pinMode(buzzer, OUTPUT);
+
+  start = millis();
+}
+
+void loop() {
+  unsigned long now = millis();
+  int motion = digitalRead(PIR);
+
+  if (motion == HIGH && lastState == LOW) {
+    if (now - lastAlert >= 10000) {
+      Serial.print("Intrusion Detected at ");
+      Serial.print((now - start) / 1000.0);
+      Serial.println(" seconds");
+
+      digitalWrite(buzzer, HIGH);
+      delay(3000);
+      digitalWrite(buzzer, LOW);
+
+      lastAlert = millis();
+    }
+  }
+
+  lastState = motion;
+}
