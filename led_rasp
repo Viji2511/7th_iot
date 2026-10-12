@@ -1,0 +1,39 @@
+import RPi.GPIO as GPIO
+import time
+import threading
+
+LED1 = 17
+LED2 = 27
+speed = 0.5
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(LED1, GPIO.OUT)
+GPIO.setup(LED2, GPIO.OUT)
+
+def change_speed():
+    global speed
+
+    while True:
+        cmd = input("Enter fast, medium, or slow: ")
+
+        if cmd == "fast":
+            speed = 0.2
+        elif cmd == "medium":
+            speed = 0.5
+        elif cmd == "slow":
+            speed = 1
+
+threading.Thread(target=change_speed, daemon=True).start()
+
+try:
+    while True:
+        GPIO.output(LED1, GPIO.HIGH)
+        GPIO.output(LED2, GPIO.LOW)
+        time.sleep(speed)
+
+        GPIO.output(LED1, GPIO.LOW)
+        GPIO.output(LED2, GPIO.HIGH)
+        time.sleep(speed)
+
+except KeyboardInterrupt:
+    GPIO.cleanup()
