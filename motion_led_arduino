@@ -1,0 +1,27 @@
+unsigned long lastMotion = 0;
+bool lightOn = false;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(2, INPUT);
+  pinMode(3, OUTPUT);
+  digitalWrite(3, LOW);
+}
+
+void loop() {
+  if (digitalRead(2) == HIGH) {
+    lastMotion = millis();
+
+    if (!lightOn) {
+      lightOn = true;
+      digitalWrite(3, HIGH);
+      Serial.println("Light ON");
+    }
+  }
+
+  if (lightOn && millis() - lastMotion >= 10000) {
+    lightOn = false;
+    digitalWrite(3, LOW);
+    Serial.println("Light OFF");
+  }
+}
