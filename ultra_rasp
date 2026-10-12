@@ -1,0 +1,18 @@
+import time
+from gpiozero import DistanceSensor
+
+sensor = DistanceSensor(echo=24, trigger=23, max_distance=2)
+
+try:
+    while True:
+        distance = sensor.distance * 100
+
+        if distance < 15:
+            print("SLOT OCCUPIED")
+        else:
+            print("SLOT VACANT")
+
+        time.sleep(1)
+
+except KeyboardInterrupt:
+    print("Stopped")
