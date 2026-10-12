@@ -1,0 +1,30 @@
+int IR = 2;
+int count = 0;
+int lastState = HIGH;
+
+unsigned long lastTime = 0;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(IR, INPUT);
+}
+
+void loop() {
+  int state = digitalRead(IR);
+  unsigned long now = millis();
+
+  if (state == LOW && lastState == HIGH) {
+    if (now - lastTime >= 1000) {
+      count++;
+
+      Serial.print("Object detected! Total Count: ");
+      Serial.println(count);
+
+      lastTime = now;
+    }
+  }
+
+  if (state != lastState) {
+    lastState = state;
+  }
+}
