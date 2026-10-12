@@ -1,0 +1,38 @@
+import time
+import RPi.GPIO as GPIO
+
+PIR = 17
+BUZZER = 22
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(PIR, GPIO.IN)
+GPIO.setup(BUZZER, GPIO.OUT)
+
+start = time.monotonic()
+last_alert = -10
+last_state = GPIO.LOW
+
+try:
+    while True:
+        now = time.monotonic()
+        motion = GPIO.input(PIR)
+
+        if motion == GPIO.HIGH and last_state == GPIO.LOW:
+            if now - last_alert >= 10:
+                print("Intrusion detected at",
+                      round(now - start, 2), "seconds")
+
+                GPIO.output(BUZZER, GPIO.HIGH)
+                time.sleep(3)
+                GPIO.output(BUZZER, GPIO.LOW)
+
+                last_alert = time.monotonic()
+
+        last_state = motion
+        time.sleep(0.02)
+
+except KeyboardInterrupt:
+    print("Stopped")
+
+finally:
+    GPIO.cleanup()
