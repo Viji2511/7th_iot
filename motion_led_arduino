@@ -1,27 +1,33 @@
+int PIR = 2;
+int RELAY = 3;
+
 unsigned long lastMotion = 0;
-bool lightOn = false;
+bool relayOn = false;
 
 void setup() {
   Serial.begin(9600);
-  pinMode(2, INPUT);
-  pinMode(3, OUTPUT);
-  digitalWrite(3, LOW);
+  pinMode(PIR, INPUT);
+  pinMode(RELAY, OUTPUT);
+
+  digitalWrite(RELAY, LOW);
 }
 
 void loop() {
-  if (digitalRead(2) == HIGH) {
-    lastMotion = millis();
+  unsigned long now = millis();
+  int motion = digitalRead(PIR);
 
-    if (!lightOn) {
-      lightOn = true;
-      digitalWrite(3, HIGH);
-      Serial.println("Light ON");
-    }
+  if (motion == HIGH) {
+    lastMotion = now;
+    digitalWrite(RELAY, HIGH);
+    relayOn = true;
+
+    Serial.println("Motion Detected | Relay ON");
   }
 
-  if (lightOn && millis() - lastMotion >= 10000) {
-    lightOn = false;
-    digitalWrite(3, LOW);
-    Serial.println("Light OFF");
+  if (relayOn && now - lastMotion >= 10000) {
+    digitalWrite(RELAY, LOW);
+    relayOn = false;
+
+    Serial.println("Motion Timeout | Relay OFF");
   }
 }
