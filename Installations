@@ -1,0 +1,15 @@
+sudo apt update
+sudo apt install -y python3-venv python3-pip libgpiod2
+
+mkdir -p ~/iot-lab
+cd ~/iot-lab
+python3 -m venv --system-site-packages .venv
+source .venv/bin/activate
+
+python -m pip install adafruit-circuitpython-dht
+
+sudo apt update
+sudo apt install -y python3-gpiozero
+
+sudo apt update
+sudo apt install -y python3-picamera2
